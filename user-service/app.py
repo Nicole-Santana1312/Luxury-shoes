@@ -1,5 +1,5 @@
 """
-USER SERVICE - Puerto 5003
+USER SERVICE - Puerto dinámico (Render)
 Maneja: perfil de usuario, historial de ordenes
 Base de datos: users.db (SQLite, se crea automaticamente)
 Se comunica con: auth-service para verificar tokens
@@ -9,12 +9,13 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS
 import sqlite3
 import requests
+import os
 
 app = Flask(__name__)
 CORS(app)
 
 DB = "users.db"
-AUTH_URL = "http://localhost:5001"
+AUTH_URL = os.environ.get("AUTH_URL")  # ← URL pública del auth-service en Render
 
 # ── Crear tablas al iniciar ────────────────────────────────────
 def init_db():
@@ -44,7 +45,7 @@ init_db()
 def verify_token(token):
     """Llama al auth-service para verificar si el token es valido"""
     try:
-        r = requests.post(f"{AUTH_URL}/verify", json={"token": token}, timeout=3)
+        r = requests.post(f"{AUTH_URL}/verify", json={"token": token}, timeout=5)
         if r.status_code == 200:
             return r.json().get("username")
     except requests.RequestException:
@@ -55,7 +56,7 @@ def verify_token(token):
 
 @app.route("/health")
 def health():
-    return jsonify({"status": "ok", "service": "user-service", "puerto": 5003})
+    return jsonify({"status": "ok", "service": "user-service"})
 
 @app.route("/profile", methods=["GET"])
 def get_profile():
@@ -129,6 +130,7 @@ def create_order():
     conn.close()
     return jsonify({"message": "Orden registrada"}), 201
 
+
 if __name__ == "__main__":
-    print(">>> user-service corriendo en http://localhost:5003")
-    app.run(port=5003, debug=True)
+    port = int(os.environ.get("PORT", 10000))
+    app.run(host="0.0.0.0", port=port, debug=False, use_reloader=False)

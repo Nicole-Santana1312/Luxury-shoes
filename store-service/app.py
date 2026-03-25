@@ -12,8 +12,8 @@ import requests
 app = Flask(__name__)
 app.secret_key = "luxury-shoes-2026-secret"
 
-AUTH_URL = "http://localhost:5001"
-USER_URL = "http://localhost:5003"
+AUTH_URL = "https://auth-service-xxxx.onrender.com"
+USER_URL = "https://user-service-xxxx.onrender.com"
 
 # ── Catalogo de productos ──────────────────────────────────────
 PRODUCTS = [
@@ -408,6 +408,8 @@ def pago():
     </body></html>
     """
 
+import os
+
 if __name__ == "__main__":
-    print(">>> store-service corriendo en http://localhost:5002")
-    app.run(port=5002, debug=True)
+    port = int(os.environ.get("PORT", 10000))
+    app.run(host="0.0.0.0", port=port, debug=False, use_reloader=False)
