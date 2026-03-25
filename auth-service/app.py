@@ -117,6 +117,8 @@ def logout():
     conn.close()
     return jsonify({"message": "Sesion cerrada"}), 200
 
+import os
+
 if __name__ == "__main__":
-    print(">>> auth-service corriendo en http://localhost:5001")
-    app.run(host="0.0.0.0", port=5001, debug=True)
+    port = int(os.environ.get("PORT", 10000))
+    app.run(host="0.0.0.0", port=port)
