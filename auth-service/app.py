@@ -119,4 +119,4 @@ def logout():
 
 if __name__ == "__main__":
     print(">>> auth-service corriendo en http://localhost:5001")
-    app.run(port=5001, debug=True)
+    app.run(host="0.0.0.0", port=5001, debug=True)
